@@ -368,6 +368,23 @@ class Commands(ABC):
         LX-850, LX-1050
         """
         return self._append_cmd('proportional', int_to_bytes(1) if enabled else int_to_bytes(0))
+    
+    def multipoint(self, point_width: int, point_height: int, pitch: int = 1) -> T:
+        """Multipoint mode for scalable font sizes (ESC/P 2 only!)
+
+        If a printer supports ESC/P 2, fonts (that support this feature) can be
+        scaled arbitrarily using the multipoint mode.
+
+        :param point_width: Width of the point
+        :param point_height: Height of the point
+        :param pitch: Sets the pitch of the font. If set to 0, the pitch is not
+            changed; if set to 1, it is proportional (default); and if set to a
+            value greater than or equal to 5, it is 360/pitch.
+        """
+        args = b''.join(
+            int_to_bytes(arg) for arg in [pitch, point_width, point_height]
+        )
+        return self._append_cmd('multipoint_mode', args)
 
     def justify(self, justification: Justification) -> T:
         """Set justification.
