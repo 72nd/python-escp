@@ -74,11 +74,14 @@ class Commands(ABC):
     def draft(self, enabled: bool) -> T:
         """Change the print quality to draft or letter quality.
 
+        If true is given as argument, the draft mode is enabled. If set to false
+        (near) letter quality is used.
+
         Point sizes 10.5 and 21 only.
         LQ quality for ESC/P2 and ESC/P.
         NLQ for 9-pin printers.
         """
-        return self._append_cmd('draft', int_to_bytes(1 if enabled else 0))
+        return self._append_cmd('draft', int_to_bytes(0 if enabled else 1))
 
     @abstractmethod
     def is_valid_character_table(self, table: int) -> bool:
@@ -110,7 +113,8 @@ class Commands(ABC):
             raise ValueError('Invalid character table')
         return self._append_cmd(
             'assign_character_table',
-            b'\x03\x00' + int_to_bytes(table) + int_to_bytes(ct.d2) + int_to_bytes(ct.d3)
+            b'\x03\x00' + int_to_bytes(table) +
+            int_to_bytes(ct.d2) + int_to_bytes(ct.d3)
         )
 
     def character_set(self, cs: CharacterSetVariant) -> T:
@@ -157,7 +161,8 @@ class Commands(ABC):
         if isinstance(content, str):
             c = bytes(content, encoding)
             if len(c) != len(content):
-                raise InvalidEncodingError(f'length of content encoded to {encoding} mismatches original length')
+                raise InvalidEncodingError(f'length of content encoded to {
+                                           encoding} mismatches original length')
         elif isinstance(content, int):
             c = int_to_bytes(content)
         elif isinstance(content, bytes):
@@ -168,7 +173,8 @@ class Commands(ABC):
             self,
             content: str,
             *,
-            character_set_substitution: dict[str, tuple[CharacterSetVariant, bytes]] = None,
+            character_set_substitution: dict[str,
+                                             tuple[CharacterSetVariant, bytes]] = None,
             plain_text_substitution: dict[str, bytes] = None,
     ) -> T:
         """Print UTF-8 text using character substitutions and character set switching.
@@ -302,7 +308,8 @@ class Commands(ABC):
         if value < 0 or value > 255:
             raise ValueError(f'Invalid margin value: ${value}')
         if margin == Margin.TOP:
-            raise NotImplementedError('Top margin is only available on ESC/P2 printers.')
+            raise NotImplementedError(
+                'Top margin is only available on ESC/P2 printers.')
         return self._append_cmd(f'margin_{margin.name.lower()}', int_to_bytes(value))
 
     @abstractmethod
