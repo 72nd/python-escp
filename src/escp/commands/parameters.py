@@ -4,6 +4,14 @@ from enum import Enum
 class Typeface(Enum):
     ROMAN = 0
     SANS_SERIF = 1
+    COURIER = 2
+    PRESTIGE = 3
+    SCRIPT = 4
+    OCR_B = 5
+    OCR_A = 6
+    ORATOR = 7
+    ORATOR_S = 8
+    SCRIPT_C = 9
 
 
 class Margin(Enum):
